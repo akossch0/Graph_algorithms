@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Main.Mainframe">
+  <grid id="27dc6" binding="panel1" default-binding="true" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="540" height="431"/>
+    </constraints>
+    <properties>
+      <preferredSize width="1000" height="700"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <grid id="af95f" binding="panel2" layout-manager="BorderLayout" hgap="0" vgap="0">
+        <constraints border-constraint="Center"/>
+        <properties>
+          <background color="-1"/>
+          <preferredSize width="1000" height="700"/>
+        </properties>
+        <border type="none" title="Graph algorithms" title-justification="2">
+          <font name="JetBrains Mono" size="28" style="2"/>
+          <title-color color="-16777216"/>
+        </border>
+        <children>
+          <component id="16b54" class="javax.swing.JButton" binding="button1" default-binding="true">
+            <constraints border-constraint="West"/>
+            <properties>
+              <text value="Button"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>

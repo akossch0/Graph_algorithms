@@ -20,12 +20,43 @@
           <title-color color="-16777216"/>
         </border>
         <children>
-          <component id="16b54" class="javax.swing.JButton" binding="button1" default-binding="true">
-            <constraints border-constraint="West"/>
+          <grid id="d9b8d" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints border-constraint="North"/>
             <properties>
-              <text value="Button"/>
+              <preferredSize width="0" height="50"/>
             </properties>
-          </component>
+            <border type="none"/>
+            <children>
+              <grid id="11a9c" layout-manager="BorderLayout" hgap="0" vgap="0">
+                <constraints border-constraint="West"/>
+                <properties>
+                  <preferredSize width="200" height="0"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="3dc5" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+                    <constraints border-constraint="Center"/>
+                    <properties/>
+                  </component>
+                </children>
+              </grid>
+              <grid id="e85c1" layout-manager="BorderLayout" hgap="0" vgap="0">
+                <constraints border-constraint="East"/>
+                <properties>
+                  <preferredSize width="200" height="0"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="2ff82" class="javax.swing.JButton" binding="button1" default-binding="true">
+                    <constraints border-constraint="Center"/>
+                    <properties>
+                      <text value="Button"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+            </children>
+          </grid>
         </children>
       </grid>
     </children>

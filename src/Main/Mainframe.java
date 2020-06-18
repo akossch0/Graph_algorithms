@@ -7,6 +7,7 @@ import java.awt.*;
 public class Mainframe {
     private JPanel panel1;
     private JPanel panel2;
+    private JComboBox comboBox1;
     private JButton button1;
 
     public Mainframe() {
@@ -45,9 +46,23 @@ public class Mainframe {
         panel2.setPreferredSize(new Dimension(1000, 700));
         panel1.add(panel2, BorderLayout.CENTER);
         panel2.setBorder(BorderFactory.createTitledBorder(null, "Graph algorithms", TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$("JetBrains Mono", Font.ITALIC, 28, panel2.getFont()), new Color(-16777216)));
+        final JPanel panel3 = new JPanel();
+        panel3.setLayout(new BorderLayout(0, 0));
+        panel3.setPreferredSize(new Dimension(0, 50));
+        panel2.add(panel3, BorderLayout.NORTH);
+        final JPanel panel4 = new JPanel();
+        panel4.setLayout(new BorderLayout(0, 0));
+        panel4.setPreferredSize(new Dimension(200, 0));
+        panel3.add(panel4, BorderLayout.WEST);
+        comboBox1 = new JComboBox();
+        panel4.add(comboBox1, BorderLayout.CENTER);
+        final JPanel panel5 = new JPanel();
+        panel5.setLayout(new BorderLayout(0, 0));
+        panel5.setPreferredSize(new Dimension(200, 0));
+        panel3.add(panel5, BorderLayout.EAST);
         button1 = new JButton();
         button1.setText("Button");
-        panel2.add(button1, BorderLayout.WEST);
+        panel5.add(button1, BorderLayout.CENTER);
     }
 
     /**

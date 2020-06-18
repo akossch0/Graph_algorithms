@@ -15,6 +15,8 @@ public class Vertex {
         return neighbours;
     }
 
+    public int getId(){ return id; }
+
     public void RemoveNeighbours(){
         neighbours.clear();
     }

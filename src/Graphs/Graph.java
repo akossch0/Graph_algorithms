@@ -92,7 +92,6 @@ public class Graph {
     }
 
     public void printGraph(){
-
         for(Vertex v : vertices){
             Integer ID = v.getId();
             System.out.print(ID.toString() + " -> ");

@@ -79,14 +79,12 @@ public class Graph {
         //adding edges
         for (int row = 0; row < n; row++) {
             for (int col = 0; col < m; col++) {
-                if(vertices.contains(new Vertex(myList[row][col])) && vertices.contains(new Vertex(myList[row][col] + 1)))
-                    addEdge(myList[row][col], myList[row][col] + 1, 1);
-                if(vertices.contains(new Vertex(myList[row][col])) && vertices.contains(new Vertex(myList[row][col] - 1)))
-                    addEdge(myList[row][col], myList[row][col] - 1, 1);
+                if(vertices.contains(new Vertex(myList[row][col])) && vertices.contains(new Vertex(myList[row][col] + 1))){
+                    if((myList[row][col] + 1) % m != 0)
+                        addEdge(myList[row][col], myList[row][col] + 1, 1);
+                }
                 if(vertices.contains(new Vertex(myList[row][col])) && vertices.contains(new Vertex(myList[row][col] + m)))
                     addEdge(myList[row][col], myList[row][col] + m, 1);
-                if(vertices.contains(new Vertex(myList[row][col])) && vertices.contains(new Vertex(myList[row][col] - m)))
-                    addEdge(myList[row][col], myList[row][col] - m, 1);
             }
         }
     }

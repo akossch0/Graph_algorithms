@@ -1,5 +1,7 @@
 package Main;
 
+import Graphs.Graph;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
@@ -9,8 +11,13 @@ public class Mainframe {
     private JPanel panel2;
     private JComboBox comboBox1;
     private JButton button1;
+    private JPanel drawPanel;
+    private Graph graph;
 
     public Mainframe() {
+        graph = new Graph();
+        graph.generateGraph(24, 39);
+        //graph.printGraph();
         $$$setupUI$$$();
     }
 
@@ -27,6 +34,14 @@ public class Mainframe {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
+        drawPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                graph.getView().setGraphics(g);
+                graph.getView().Update();
+            }
+        };
     }
 
     /**
@@ -37,6 +52,7 @@ public class Mainframe {
      * @noinspection ALL
      */
     private void $$$setupUI$$$() {
+        createUIComponents();
         panel1 = new JPanel();
         panel1.setLayout(new BorderLayout(0, 0));
         panel1.setPreferredSize(new Dimension(1000, 700));
@@ -63,6 +79,8 @@ public class Mainframe {
         button1 = new JButton();
         button1.setText("Button");
         panel5.add(button1, BorderLayout.CENTER);
+        drawPanel.setPreferredSize(new Dimension(1000, 650));
+        panel2.add(drawPanel, BorderLayout.CENTER);
     }
 
     /**

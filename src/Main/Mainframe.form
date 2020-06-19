@@ -57,6 +57,14 @@
               </grid>
             </children>
           </grid>
+          <grid id="bf5d1" binding="drawPanel" custom-create="true" layout-manager="BorderLayout" hgap="10" vgap="10">
+            <constraints border-constraint="Center"/>
+            <properties>
+              <preferredSize width="1000" height="650"/>
+            </properties>
+            <border type="none"/>
+            <children/>
+          </grid>
         </children>
       </grid>
     </children>

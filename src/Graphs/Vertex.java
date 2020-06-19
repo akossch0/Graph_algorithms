@@ -5,6 +5,7 @@ import java.util.*;
 public class Vertex {
     private int id;
     private Map<Vertex, Integer> neighbours;
+    public int X,Y;
 
     public Vertex(int _id){
         neighbours = new HashMap<>();

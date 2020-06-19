@@ -1,13 +1,22 @@
 package Graphs;
 
+import Views.VertexView;
+import Views.View;
+
 import java.util.*;
 
 
 public class Graph {
     private Set<Vertex> vertices;
+    private View view;
+
+    public View getView() {
+        return view;
+    }
 
     public Graph(){
         vertices = new HashSet<>();
+        view = new View();
     }
 
     Vertex getElement(Vertex v){
@@ -71,7 +80,11 @@ public class Graph {
             for (int col = 0; col < m; col++) {
                 myList[row][col] = id++;
                 System.out.print(myList[row][col] + "  ");
-                vertices.add(new Vertex(myList[row][col]));
+                Vertex v = new Vertex(myList[row][col]);
+                v.X = col;
+                v.Y = row;
+                vertices.add(v);
+                view.AddView(new VertexView(v));
             }
             System.out.println();
         }

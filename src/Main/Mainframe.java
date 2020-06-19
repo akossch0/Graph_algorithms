@@ -5,6 +5,8 @@ import Graphs.Graph;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Mainframe {
     private JPanel panel1;
@@ -17,8 +19,20 @@ public class Mainframe {
     public Mainframe() {
         graph = new Graph();
         graph.generateGraph(24, 39);
-        //graph.printGraph();
         $$$setupUI$$$();
+        initListeners();
+        drawPanel.addMouseListener(new MouseAdapter() {
+        });
+    }
+
+    public void initListeners() {
+        drawPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                System.out.println(e.getX() + ";" + e.getY());
+            }
+        });
     }
 
     public static void Run(String[] args) {

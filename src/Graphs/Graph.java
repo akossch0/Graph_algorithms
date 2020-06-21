@@ -19,6 +19,14 @@ public class Graph {
         view = new View();
     }
 
+    public Vertex getElement(int id){
+        for(Vertex v: vertices){
+            if(v.getId() == id)
+                return v;
+        }
+        return null;
+    }
+
     Vertex getElement(Vertex v){
         for (Iterator<Vertex> it = vertices.iterator(); it.hasNext(); ) {
             Vertex vert = it.next();

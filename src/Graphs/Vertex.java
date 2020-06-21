@@ -6,10 +6,12 @@ public class Vertex {
     private int id;
     private Map<Vertex, Integer> neighbours;
     public int X,Y;
+    public boolean selected;
 
     public Vertex(int _id){
         neighbours = new HashMap<>();
         id = _id;
+        selected = false;
     }
 
     public Map<Vertex, Integer> getNeighbours() {

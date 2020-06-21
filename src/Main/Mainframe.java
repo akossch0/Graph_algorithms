@@ -21,8 +21,12 @@ public class Mainframe {
         graph.generateGraph(24, 39);
         $$$setupUI$$$();
         initListeners();
-        drawPanel.addMouseListener(new MouseAdapter() {
-        });
+    }
+
+    public int countCoord(int mouseCoord) {
+        double val = mouseCoord / 25.0;
+        Double Value = val;
+        return Value.intValue();
     }
 
     public void initListeners() {
@@ -30,13 +34,35 @@ public class Mainframe {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                System.out.println(e.getX() + ";" + e.getY());
+
+                int x = countCoord(e.getX() - 7);
+                int y = countCoord(e.getY() - 5);
+
+                int clickedId = 39 * y + x;
+                graph.getElement(clickedId).selected = !graph.getElement(clickedId).selected;
+                drawPanel.repaint();
+                System.out.println(x + ";" + y);
+            }
+        });
+
+        drawPanel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);
+                int x = countCoord(e.getX() - 7);
+                int y = countCoord(e.getY() - 5);
+
+                int clickedId = 39 * y + x;
+                if (!graph.getElement(clickedId).selected)
+                    graph.getElement(clickedId).selected = true;
+                drawPanel.repaint();
+                System.out.println(x + ";" + y);
             }
         });
     }
 
     public static void Run(String[] args) {
-        JFrame frame = new JFrame("Icefield");
+        JFrame frame = new JFrame("Algorithms");
         frame.setContentPane(new Mainframe().panel1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();

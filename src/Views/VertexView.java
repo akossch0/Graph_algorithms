@@ -16,6 +16,7 @@ public class VertexView implements IView{
     BufferedImage redVertexImage;
     BufferedImage startVertexImage;
     BufferedImage targetVertexImage;
+    BufferedImage blackVertexImage;
     public VertexView(Vertex v){
         vertex = v;
         try {
@@ -24,6 +25,7 @@ public class VertexView implements IView{
             redVertexImage = ImageIO.read(new File("src/images/node_red.png"));;
             startVertexImage = ImageIO.read(new File("src/images/node_start.png"));;
             targetVertexImage = ImageIO.read(new File("src/images/node_target.png"));;
+            blackVertexImage = ImageIO.read(new File("src/images/node_black.png"));
         } catch (IOException e) {
             System.out.println("Error while loading the vertex image!");
         }
@@ -34,6 +36,6 @@ public class VertexView implements IView{
         if(!vertex.selected)
             graphics.drawImage(basicVertexImage,vertex.X*25+7,vertex.Y*25+5,null);
         else
-            graphics.drawImage(redVertexImage,vertex.X*25+7,vertex.Y*25+5,null);
+            graphics.drawImage(blackVertexImage,vertex.X*25+7,vertex.Y*25+5,null);
     }
 }

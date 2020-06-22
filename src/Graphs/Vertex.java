@@ -14,6 +14,26 @@ public class Vertex {
         selected = false;
     }
 
+    private List<Vertex> shortestPath = new LinkedList<>();
+
+    private Integer distance = Integer.MAX_VALUE;
+
+    public Integer getDistance(){
+        return distance;
+    }
+
+    public void setDistance(Integer val){
+        distance = val;
+    }
+
+    public List<Vertex> getShortestPath(){
+        return shortestPath;
+    }
+
+    public void setShortestPath(List<Vertex> path){
+        shortestPath = path;
+    }
+
     public Map<Vertex, Integer> getNeighbours() {
         return neighbours;
     }
@@ -38,6 +58,6 @@ public class Vertex {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, neighbours);
+        return Objects.hash(id);
     }
 }

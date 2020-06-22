@@ -1,14 +1,17 @@
 package Graphs;
 
+import Main.Mainframe;
 import Views.VertexView;
 import Views.View;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 public class Graph {
     private Set<Vertex> vertices;
     private View view;
+    private Mainframe frame;
 
     public View getView() {
         return view;
@@ -17,6 +20,14 @@ public class Graph {
     public Graph(){
         vertices = new HashSet<>();
         view = new View();
+    }
+
+    public void setFrame(Mainframe mf){
+        frame = mf;
+    }
+
+    public Set<Vertex> getVertices(){
+        return vertices;
     }
 
     public Vertex getElement(int id){
@@ -50,14 +61,13 @@ public class Graph {
     }
 
     void addEdge(int id1, int id2, int weight) {
-        Vertex v1 = new Vertex(id1);
-        Vertex v2 = new Vertex(id2);
-        Vertex vertex1 = getElement(v1);
+        Vertex vertex1 = getElement(id1);
+        Vertex vertex2 = getElement(id2);
         if(vertex1 != null)
-            vertex1.AddNeighbour(v2, weight);
-        Vertex vertex2 = getElement(v2);
+            vertex1.AddNeighbour(vertex2, weight);
+
         if(vertex2 != null)
-            vertex2.AddNeighbour(v1, weight);
+            vertex2.AddNeighbour(vertex1, weight);
     }
 
     void removeEdge(int id1, int id2) {
@@ -87,14 +97,14 @@ public class Graph {
         for (int row = 0; row < n; row++) {
             for (int col = 0; col < m; col++) {
                 myList[row][col] = id++;
-                System.out.print(myList[row][col] + "  ");
+                //System.out.print(myList[row][col] + "  ");
                 Vertex v = new Vertex(myList[row][col]);
                 v.X = col;
                 v.Y = row;
                 vertices.add(v);
                 view.AddView(new VertexView(v));
             }
-            System.out.println();
+            //System.out.println();
         }
 
         //adding edges
@@ -121,4 +131,127 @@ public class Graph {
             System.out.println();
         }
     }
+
+    public Map<Map<Vertex,Integer>,Map<Vertex,Vertex>> Dijkstra(Vertex source) {
+        Map<Map<Vertex,Integer>,Map<Vertex,Vertex>> result = new HashMap<>();
+        Map<Vertex,Integer> dist = new HashMap<>();
+        Map<Vertex,Vertex> prev = new HashMap<>();
+
+        Set<Vertex> queue = new HashSet<>();
+        for(Vertex v : vertices){
+            dist.put(v,Integer.MAX_VALUE);
+            prev.put(v,null);
+            queue.add(v);
+        }
+        dist.put(source, 0);
+        
+        while(!queue.isEmpty()){
+            
+            Vertex u = null;
+            int size = queue.size();
+            int item = new Random().nextInt(size);
+            int i = 0;
+            for(Vertex obj : queue)
+            {
+                if (i == item)
+                    u = obj;
+                i++;
+            }
+            
+            for(Vertex v : dist.keySet()){
+                if(dist.get(v) < dist.get(u)){
+                    u = v;
+                }
+            }
+
+            ///////////////////////////////////
+            getElement(u).selected = true;
+            frame.getDrawPanel().repaint();
+            System.out.println("REPAINT DIJKSTRA");
+            //try {
+                //Thread.sleep(100);
+            //}catch (InterruptedException ie){
+            //    System.out.println("Sleep hiba!");
+            //}
+            ///////////////////////////////////
+
+            queue.remove(u);
+
+            if(u != null) {
+                for (Vertex v : u.getNeighbours().keySet()) {
+                    if (queue.contains(v)) {
+                        int alt = dist.get(u) + u.getNeighbours().get(v);
+                        if (alt < dist.get(u)) {
+                            dist.put(v, alt);
+                            prev.put(v, u);
+                        }
+                    }
+                }
+            }
+
+
+        }
+        result.put(dist,prev);
+        return result;
+    }
+    public void calculateShortestPathFromSource(Graph graph, Vertex source) {
+        source.setDistance(0);
+
+        Set<Vertex> settledNodes = new HashSet<>();
+        Set<Vertex> unsettledNodes = new HashSet<>();
+
+        unsettledNodes.add(source);
+
+        while (unsettledNodes.size() != 0) {
+            Vertex currentNode = getLowestDistanceNode(unsettledNodes);
+
+            unsettledNodes.remove(currentNode);
+
+            ///////////////////////////////////
+            getElement(currentNode).selected = true;
+            frame.getDrawPanel().repaint();
+            System.out.println("REPAINT DIJKSTRA");
+            //try {
+            //    TimeUnit.SECONDS.sleep(1);
+            //}catch (InterruptedException ie){
+            //    System.out.println("Sleep hiba!");
+            //}
+            ///////////////////////////////////
+
+            for (Map.Entry<Vertex, Integer> adjacencyPair : currentNode.getNeighbours().entrySet()) {
+                Vertex adjacentNode = adjacencyPair.getKey();
+                Integer edgeWeight = adjacencyPair.getValue();
+                if (!settledNodes.contains(adjacentNode)) {
+                    calculateMinimumDistance(adjacentNode, edgeWeight, currentNode);
+                    unsettledNodes.add(adjacentNode);
+                }
+            }
+            settledNodes.add(currentNode);
+        }
+
+    }
+    private Vertex getLowestDistanceNode(Set <Vertex> unsettledNodes) {
+        Vertex lowestDistanceNode = null;
+        int lowestDistance = Integer.MAX_VALUE;
+        for (Vertex node: unsettledNodes) {
+            int nodeDistance = node.getDistance();
+            if (nodeDistance < lowestDistance) {
+                lowestDistance = nodeDistance;
+                lowestDistanceNode = node;
+            }
+        }
+        return lowestDistanceNode;
+    }
+    private void calculateMinimumDistance(Vertex evaluationNode, Integer edgeWeigh, Vertex sourceNode) {
+        Integer sourceDistance = sourceNode.getDistance();
+        if (sourceDistance + edgeWeigh < evaluationNode.getDistance()) {
+            evaluationNode.setDistance(sourceDistance + edgeWeigh);
+            LinkedList<Vertex> shortestPath = new LinkedList<>(sourceNode.getShortestPath());
+            shortestPath.add(sourceNode);
+            evaluationNode.setShortestPath(shortestPath);
+        }
+    }
+
+
+
 }

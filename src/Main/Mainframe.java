@@ -1,26 +1,40 @@
 package Main;
 
 import Graphs.Graph;
+import Graphs.Vertex;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 public class Mainframe {
+    private String algo;
     private JPanel panel1;
     private JPanel panel2;
-    private JComboBox comboBox1;
-    private JButton button1;
+    private JComboBox algComboBox;
+    private JButton clearButton;
     private JPanel drawPanel;
+    private JButton startButton;
     private Graph graph;
 
     public Mainframe() {
         graph = new Graph();
         graph.generateGraph(24, 39);
+        graph.setFrame(this);
         $$$setupUI$$$();
         initListeners();
+    }
+
+    public JPanel getDrawPanel() {
+        return drawPanel;
     }
 
     public int countCoord(int mouseCoord) {
@@ -34,14 +48,16 @@ public class Mainframe {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
+                if (e.getX() - 7 < 39 * 25 && e.getY() - 5 < 24 * 25) {
+                    int x = countCoord(e.getX() - 7);
+                    int y = countCoord(e.getY() - 5);
 
-                int x = countCoord(e.getX() - 7);
-                int y = countCoord(e.getY() - 5);
-
-                int clickedId = 39 * y + x;
-                graph.getElement(clickedId).selected = !graph.getElement(clickedId).selected;
-                drawPanel.repaint();
-                System.out.println(x + ";" + y);
+                    int clickedId = 39 * y + x;
+                    if (graph.getElement(clickedId) != null)
+                        graph.getElement(clickedId).selected = !graph.getElement(clickedId).selected;
+                    drawPanel.repaint();
+                    System.out.println(x + ";" + y);
+                }
             }
         });
 
@@ -49,16 +65,69 @@ public class Mainframe {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
+                if (e.getX() - 7 > 39 * 25 || e.getY() - 5 > 24 * 25 || e.getX() - 7 < 0 || e.getY() - 5 < 0)
+                    return;
                 int x = countCoord(e.getX() - 7);
                 int y = countCoord(e.getY() - 5);
 
                 int clickedId = 39 * y + x;
-                if (!graph.getElement(clickedId).selected)
+
+                if (graph.getElement(clickedId) != null && !graph.getElement(clickedId).selected)
                     graph.getElement(clickedId).selected = true;
                 drawPanel.repaint();
                 System.out.println(x + ";" + y);
             }
         });
+
+        clearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (Vertex v : graph.getVertices()) {
+                    v.selected = false;
+                }
+                drawPanel.repaint();
+            }
+        });
+
+        algComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                algo = (String) algComboBox.getSelectedItem();
+            }
+        });
+
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Vertex source = null;
+                int size = graph.getVertices().size();
+                int item = new Random().nextInt(size);
+                int i = 0;
+                for (Vertex obj : graph.getVertices()) {
+                    if (i == item)
+                        source = obj;
+                    i++;
+                }
+                source = graph.getElement(0);
+
+                //printRecursively(source);
+                //graph.Dijkstra(source);
+                //graph.printGraph();
+                graph.calculateShortestPathFromSource(graph, source);
+            }
+        });
+    }
+
+    void printRecursively(Vertex vert) {
+        Set<Vertex> visited = new HashSet<>();
+
+        for (Vertex v : vert.getNeighbours().keySet()) {
+            if (v != null && !visited.contains(v)) {
+                visited.add(v);
+                System.out.println("Vertex <" + v.getId() + "> visited");
+            }
+            printRecursively(v);
+        }
     }
 
     public static void Run(String[] args) {
@@ -82,6 +151,11 @@ public class Mainframe {
                 graph.getView().Update();
             }
         };
+
+        clearButton = new JButton();
+        String[] algorithms = {"Dijkstra", "A-search", "BFS", "DFS"};
+        algComboBox = new JComboBox(algorithms);
+        startButton = new JButton();
     }
 
     /**
@@ -110,15 +184,29 @@ public class Mainframe {
         panel4.setLayout(new BorderLayout(0, 0));
         panel4.setPreferredSize(new Dimension(200, 0));
         panel3.add(panel4, BorderLayout.WEST);
-        comboBox1 = new JComboBox();
-        panel4.add(comboBox1, BorderLayout.CENTER);
+        algComboBox.setBackground(new Color(-12828607));
+        Font algComboBoxFont = this.$$$getFont$$$("Fira Code Medium", -1, 16, algComboBox.getFont());
+        if (algComboBoxFont != null) algComboBox.setFont(algComboBoxFont);
+        algComboBox.setForeground(new Color(-1));
+        algComboBox.setOpaque(false);
+        algComboBox.setPopupVisible(false);
+        panel4.add(algComboBox, BorderLayout.CENTER);
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new BorderLayout(0, 0));
         panel5.setPreferredSize(new Dimension(200, 0));
         panel3.add(panel5, BorderLayout.EAST);
-        button1 = new JButton();
-        button1.setText("Button");
-        panel5.add(button1, BorderLayout.CENTER);
+        clearButton.setBackground(new Color(-12828607));
+        Font clearButtonFont = this.$$$getFont$$$("Fira Code Medium", -1, 16, clearButton.getFont());
+        if (clearButtonFont != null) clearButton.setFont(clearButtonFont);
+        clearButton.setForeground(new Color(-1));
+        clearButton.setText("Clear");
+        panel5.add(clearButton, BorderLayout.CENTER);
+        startButton.setBackground(new Color(-12828607));
+        Font startButtonFont = this.$$$getFont$$$("Fira Code Medium", -1, 16, startButton.getFont());
+        if (startButtonFont != null) startButton.setFont(startButtonFont);
+        startButton.setForeground(new Color(-1));
+        startButton.setText("Start");
+        panel3.add(startButton, BorderLayout.CENTER);
         drawPanel.setPreferredSize(new Dimension(1000, 650));
         panel2.add(drawPanel, BorderLayout.CENTER);
     }

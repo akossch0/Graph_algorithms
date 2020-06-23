@@ -2,6 +2,10 @@ package Main;
 
 import Graphs.Graph;
 import Graphs.Vertex;
+import Views.BlackVertexImage;
+import Views.RedVertexImage;
+import Views.StartVertexImage;
+import Views.WhiteVertexImage;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -10,10 +14,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Mainframe {
     private String algo;
@@ -24,6 +27,7 @@ public class Mainframe {
     private JPanel drawPanel;
     private JButton startButton;
     private Graph graph;
+    private AlgorithmThread algThread;
 
     public Mainframe() {
         graph = new Graph();
@@ -31,6 +35,14 @@ public class Mainframe {
         graph.setFrame(this);
         $$$setupUI$$$();
         initListeners();
+    }
+
+    public JButton getClearButton() {
+        return clearButton;
+    }
+
+    public JButton getStartButton() {
+        return startButton;
     }
 
     public JPanel getDrawPanel() {
@@ -53,10 +65,12 @@ public class Mainframe {
                     int y = countCoord(e.getY() - 5);
 
                     int clickedId = 39 * y + x;
-                    if (graph.getElement(clickedId) != null)
-                        graph.getElement(clickedId).selected = !graph.getElement(clickedId).selected;
+                    if (graph.getElement(clickedId) != null && graph.getElement(clickedId).getVertexView().getVertexImage() instanceof WhiteVertexImage)
+                        graph.getElement(clickedId).setVertexImage(new BlackVertexImage(graph.getElement(clickedId)));
+                    else if (graph.getElement(clickedId) != null && graph.getElement(clickedId).getVertexView().getVertexImage() instanceof BlackVertexImage)
+                        graph.getElement(clickedId).setVertexImage(new WhiteVertexImage(graph.getElement(clickedId)));
                     drawPanel.repaint();
-                    System.out.println(x + ";" + y);
+                    //System.out.println(x + ";" + y);
                 }
             }
         });
@@ -72,8 +86,8 @@ public class Mainframe {
 
                 int clickedId = 39 * y + x;
 
-                if (graph.getElement(clickedId) != null && !graph.getElement(clickedId).selected)
-                    graph.getElement(clickedId).selected = true;
+                if (graph.getElement(clickedId) != null && graph.getElement(clickedId).getVertexView().getVertexImage() instanceof WhiteVertexImage)
+                    graph.getElement(clickedId).setVertexImage(new BlackVertexImage(graph.getElement(clickedId)));
                 drawPanel.repaint();
                 System.out.println(x + ";" + y);
             }
@@ -82,10 +96,9 @@ public class Mainframe {
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (Vertex v : graph.getVertices()) {
-                    v.selected = false;
-                }
+                graph.clear();
                 drawPanel.repaint();
+                startButton.setEnabled(true);
             }
         });
 
@@ -99,35 +112,16 @@ public class Mainframe {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Vertex source = null;
-                int size = graph.getVertices().size();
-                int item = new Random().nextInt(size);
-                int i = 0;
-                for (Vertex obj : graph.getVertices()) {
-                    if (i == item)
-                        source = obj;
-                    i++;
-                }
-                source = graph.getElement(0);
-
-                //printRecursively(source);
-                //graph.Dijkstra(source);
-                //graph.printGraph();
-                graph.calculateShortestPathFromSource(graph, source);
+                Vertex source = graph.RandomVertex();
+                source.setVertexImage(new StartVertexImage(source));
+                List<Vertex> nodes = graph.Dijkstra(source);
+                algThread = new AlgorithmThread(drawPanel, Mainframe.this);
+                algThread.setVertices(nodes);
+                algThread.start();
+                startButton.setEnabled(false);
+                clearButton.setEnabled(false);
             }
         });
-    }
-
-    void printRecursively(Vertex vert) {
-        Set<Vertex> visited = new HashSet<>();
-
-        for (Vertex v : vert.getNeighbours().keySet()) {
-            if (v != null && !visited.contains(v)) {
-                visited.add(v);
-                System.out.println("Vertex <" + v.getId() + "> visited");
-            }
-            printRecursively(v);
-        }
     }
 
     public static void Run(String[] args) {

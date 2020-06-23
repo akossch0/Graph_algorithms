@@ -1,8 +1,10 @@
 package Graphs;
 
 import Main.Mainframe;
+import Views.BlackVertexImage;
 import Views.VertexView;
 import Views.View;
+import Views.WhiteVertexImage;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -132,103 +134,30 @@ public class Graph {
         }
     }
 
-    public Map<Map<Vertex,Integer>,Map<Vertex,Vertex>> Dijkstra(Vertex source) {
-        Map<Map<Vertex,Integer>,Map<Vertex,Vertex>> result = new HashMap<>();
-        Map<Vertex,Integer> dist = new HashMap<>();
-        Map<Vertex,Vertex> prev = new HashMap<>();
-
-        Set<Vertex> queue = new HashSet<>();
-        for(Vertex v : vertices){
-            dist.put(v,Integer.MAX_VALUE);
-            prev.put(v,null);
-            queue.add(v);
-        }
-        dist.put(source, 0);
-        
-        while(!queue.isEmpty()){
-            
-            Vertex u = null;
-            int size = queue.size();
-            int item = new Random().nextInt(size);
-            int i = 0;
-            for(Vertex obj : queue)
-            {
-                if (i == item)
-                    u = obj;
-                i++;
-            }
-            
-            for(Vertex v : dist.keySet()){
-                if(dist.get(v) < dist.get(u)){
-                    u = v;
-                }
-            }
-
-            ///////////////////////////////////
-            getElement(u).selected = true;
-            frame.getDrawPanel().repaint();
-            System.out.println("REPAINT DIJKSTRA");
-            //try {
-                //Thread.sleep(100);
-            //}catch (InterruptedException ie){
-            //    System.out.println("Sleep hiba!");
-            //}
-            ///////////////////////////////////
-
-            queue.remove(u);
-
-            if(u != null) {
-                for (Vertex v : u.getNeighbours().keySet()) {
-                    if (queue.contains(v)) {
-                        int alt = dist.get(u) + u.getNeighbours().get(v);
-                        if (alt < dist.get(u)) {
-                            dist.put(v, alt);
-                            prev.put(v, u);
-                        }
-                    }
-                }
-            }
-
-
-        }
-        result.put(dist,prev);
-        return result;
-    }
-    public void calculateShortestPathFromSource(Graph graph, Vertex source) {
+    public List<Vertex> Dijkstra(Vertex source) {
         source.setDistance(0);
 
         Set<Vertex> settledNodes = new HashSet<>();
         Set<Vertex> unsettledNodes = new HashSet<>();
+        List<Vertex> nodes = new ArrayList<>();
 
         unsettledNodes.add(source);
 
         while (unsettledNodes.size() != 0) {
             Vertex currentNode = getLowestDistanceNode(unsettledNodes);
-
             unsettledNodes.remove(currentNode);
-
-            ///////////////////////////////////
-            getElement(currentNode).selected = true;
-            frame.getDrawPanel().repaint();
-            System.out.println("REPAINT DIJKSTRA");
-            //try {
-            //    TimeUnit.SECONDS.sleep(1);
-            //}catch (InterruptedException ie){
-            //    System.out.println("Sleep hiba!");
-            //}
-            ///////////////////////////////////
-
             for (Map.Entry<Vertex, Integer> adjacencyPair : currentNode.getNeighbours().entrySet()) {
                 Vertex adjacentNode = adjacencyPair.getKey();
                 Integer edgeWeight = adjacencyPair.getValue();
-                if (!settledNodes.contains(adjacentNode)) {
+                if (!settledNodes.contains(adjacentNode) && !(adjacentNode.getVertexView().getVertexImage() instanceof BlackVertexImage)) {
                     calculateMinimumDistance(adjacentNode, edgeWeight, currentNode);
                     unsettledNodes.add(adjacentNode);
                 }
             }
+            nodes.add(currentNode);
             settledNodes.add(currentNode);
         }
-
+        return nodes;
     }
     private Vertex getLowestDistanceNode(Set <Vertex> unsettledNodes) {
         Vertex lowestDistanceNode = null;
@@ -252,6 +181,26 @@ public class Graph {
         }
     }
 
+    public void clear(){
+        for (Vertex v : vertices) {
+            v.setVertexImage(new WhiteVertexImage(v));
+            v.setShortestPath(new LinkedList<>());
+            v.setDistance(Integer.MAX_VALUE);
+        }
+    }
 
+    public Vertex RandomVertex(){
+        Vertex source = null;
+        int size = vertices.size();
+        Random rand = new Random();
+        int item = rand.nextInt(size);
+        int i = 0;
+        for (Vertex v : vertices) {
+            if (i == item)
+                source = v;
+            i++;
+        }
+        return source;
+    }
 
 }

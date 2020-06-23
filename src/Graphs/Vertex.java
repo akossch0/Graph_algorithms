@@ -1,22 +1,35 @@
 package Graphs;
 
+import Views.VertexImage;
+import Views.VertexView;
+
 import java.util.*;
 
 public class Vertex {
     private int id;
     private Map<Vertex, Integer> neighbours;
     public int X,Y;
-    public boolean selected;
+    private VertexView vertexView;
+    private List<Vertex> shortestPath = new LinkedList<>();
+    private Integer distance = Integer.MAX_VALUE;
 
     public Vertex(int _id){
         neighbours = new HashMap<>();
         id = _id;
-        selected = false;
     }
 
-    private List<Vertex> shortestPath = new LinkedList<>();
+    public VertexView getVertexView() {
+        return vertexView;
+    }
 
-    private Integer distance = Integer.MAX_VALUE;
+    public void setVertexView(VertexView vertexView) {
+        this.vertexView = vertexView;
+    }
+
+    public void setVertexImage(VertexImage vi){
+        vertexView.setVertexImage(vi);
+    }
+
 
     public Integer getDistance(){
         return distance;

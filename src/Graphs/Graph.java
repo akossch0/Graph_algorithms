@@ -1,10 +1,7 @@
 package Graphs;
 
 import Main.Mainframe;
-import Views.BlackVertexImage;
-import Views.VertexView;
-import Views.View;
-import Views.WhiteVertexImage;
+import Views.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -193,14 +190,39 @@ public class Graph {
         Vertex source = null;
         int size = vertices.size();
         Random rand = new Random();
-        int item = rand.nextInt(size);
-        int i = 0;
-        for (Vertex v : vertices) {
-            if (i == item)
-                source = v;
-            i++;
+        while(source == null) {
+            int item = rand.nextInt(size);
+            int i = 0;
+            for (Vertex v : vertices) {
+                if (i == item && (v.getVertexView().getVertexImage() instanceof WhiteVertexImage))
+                    source = v;
+                i++;
+            }
         }
         return source;
+    }
+
+    public Vertex RandomTarget(){
+        Vertex target = null;
+        while(target == null){
+            Vertex curr = RandomVertex();
+            if(!(curr.getVertexView().getVertexImage() instanceof StartVertexImage)){
+                target = curr;
+            }
+        }
+        target.setVertexImage(new TargetVertexImage(target));
+        return target;
+    }
+
+    public void RandomWalls(double p){
+
+        for(Vertex v : vertices){
+            Random rand = new Random();
+            double Poss = rand.nextDouble();
+            if(Poss < p){
+                v.setVertexImage(new BlackVertexImage(v));
+            }
+        }
     }
 
 }

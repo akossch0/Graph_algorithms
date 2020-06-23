@@ -89,7 +89,7 @@ public class Mainframe {
                 if (graph.getElement(clickedId) != null && graph.getElement(clickedId).getVertexView().getVertexImage() instanceof WhiteVertexImage)
                     graph.getElement(clickedId).setVertexImage(new BlackVertexImage(graph.getElement(clickedId)));
                 drawPanel.repaint();
-                System.out.println(x + ";" + y);
+                //System.out.println(x + ";" + y);
             }
         });
 
@@ -112,11 +112,13 @@ public class Mainframe {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                graph.RandomWalls(0.3);
                 Vertex source = graph.RandomVertex();
                 source.setVertexImage(new StartVertexImage(source));
                 List<Vertex> nodes = graph.Dijkstra(source);
                 algThread = new AlgorithmThread(drawPanel, Mainframe.this);
                 algThread.setVertices(nodes);
+                algThread.setTarget(graph.RandomTarget());
                 algThread.start();
                 startButton.setEnabled(false);
                 clearButton.setEnabled(false);

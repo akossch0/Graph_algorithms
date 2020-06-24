@@ -117,6 +117,18 @@ public class Graph {
                 }
                 if(vertices.contains(new Vertex(myList[row][col])) && vertices.contains(new Vertex(myList[row][col] + m)))
                     addEdge(myList[row][col], myList[row][col] + m, 1);
+                /*
+                if(vertices.contains(new Vertex(myList[row][col])) && vertices.contains(new Vertex(myList[row][col] + m + 1))){
+                    if((myList[row][col] + 1) % m != 0)
+                        addEdge(myList[row][col], myList[row][col] + m + 1, 1);
+                }
+
+                if(vertices.contains(new Vertex(myList[row][col])) && vertices.contains(new Vertex(myList[row][col] + m - 1))){
+                    if((myList[row][col] + 1) % m != 0)
+                        addEdge(myList[row][col], myList[row][col] + m - 1, 1);
+                }
+                */
+
             }
         }
     }
@@ -317,8 +329,10 @@ public class Graph {
     }
 
     public void dfs(Vertex v, Map<Vertex, Boolean> visited, List<Vertex> result){
-        visited.put(v,true);
-        result.add(v);
+        visited.put(v, true);
+        if(!(v.getVertexView().getVertexImage() instanceof BlackVertexImage)) {
+            result.add(v);
+        }
         //System.out.print(v.getId()+" ");
 
         for(Vertex vert : v.getNeighbours().keySet()){

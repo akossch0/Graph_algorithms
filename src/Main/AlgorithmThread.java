@@ -48,7 +48,7 @@ public class AlgorithmThread implements Runnable {
                 }
             }
             for(Vertex v : target.getShortestPath()){
-                if(!(v.getVertexView().getVertexImage() instanceof StartVertexImage)) {
+                if(!(v.getVertexView().getVertexImage() instanceof StartVertexImage) && !(v.getVertexView().getVertexImage() instanceof TargetVertexImage)) {
                     v.setVertexImage(new GreenVertexImage(v));
                     drawPanel.repaint();
                 }

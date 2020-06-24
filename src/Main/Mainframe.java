@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Mainframe {
-    private String algo;
+    private String algo = "Dijkstra";
     private JPanel panel1;
     private JPanel panel2;
     private JComboBox algComboBox;
@@ -124,8 +124,35 @@ public class Mainframe {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                List<Vertex> nodes = new ArrayList<>();
+                switch (algo) {
+                    case "Dijkstra":
+                        nodes = graph.Dijkstra(source);
+                        break;
+                    case "DFS":
+                        Map<Vertex, Boolean> visited = new HashMap<>();
+                        for (Vertex v : graph.getVertices()) {
+                            visited.put(v, false);
+                        }
+                        graph.dfs(source, visited, nodes);
+                        List<Vertex> list = new LinkedList<>(nodes);
+                        List<Vertex> list2 = new LinkedList<>();
+                        for (Vertex v : list) {
+                            list2.add(v);
+                            if (v.equals(target))
+                                break;
 
-                List<Vertex> nodes = graph.Dijkstra(source);
+                        }
+                        target.setShortestPath(new LinkedList<>(list2));
+                        break;
+                    case "BFS":
+
+                        break;
+                    default:
+
+                        break;
+                }
+
                 algThread = new AlgorithmThread(drawPanel, Mainframe.this);
                 algThread.setVertices(nodes);
                 algThread.setTarget(target);

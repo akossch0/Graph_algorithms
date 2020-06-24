@@ -64,15 +64,34 @@
                   </component>
                 </children>
               </grid>
-              <component id="4c03c" class="javax.swing.JButton" binding="startButton" custom-create="true">
+              <grid id="f9312" layout-manager="BorderLayout" hgap="0" vgap="0">
                 <constraints border-constraint="Center"/>
-                <properties>
-                  <background color="-12828607"/>
-                  <font name="Fira Code Medium" size="16"/>
-                  <foreground color="-1"/>
-                  <text value="Start"/>
-                </properties>
-              </component>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="4c03c" class="javax.swing.JButton" binding="startButton" custom-create="true">
+                    <constraints border-constraint="West"/>
+                    <properties>
+                      <background color="-12828607"/>
+                      <font name="Fira Code Medium" size="16"/>
+                      <foreground color="-1"/>
+                      <preferredSize width="200" height="30"/>
+                      <text value="Start"/>
+                    </properties>
+                  </component>
+                  <component id="3d9e" class="javax.swing.JComboBox" binding="wallComboBox" custom-create="true">
+                    <constraints border-constraint="East"/>
+                    <properties>
+                      <background color="-12828607"/>
+                      <font name="Fira Code Medium" size="16"/>
+                      <foreground color="-1"/>
+                      <opaque value="false"/>
+                      <popupVisible value="false"/>
+                      <preferredSize width="200" height="30"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
             </children>
           </grid>
           <grid id="bf5d1" binding="drawPanel" custom-create="true" layout-manager="BorderLayout" hgap="10" vgap="10">

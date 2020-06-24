@@ -26,8 +26,11 @@ public class Mainframe {
     private JButton clearButton;
     private JPanel drawPanel;
     private JButton startButton;
+    private JComboBox wallComboBox;
     private Graph graph;
     private AlgorithmThread algThread;
+    private Vertex source;
+    private Vertex target;
 
     public Mainframe() {
         graph = new Graph();
@@ -35,6 +38,9 @@ public class Mainframe {
         graph.setFrame(this);
         $$$setupUI$$$();
         initListeners();
+
+        source = graph.RandomSource();
+        target = graph.RandomTarget();
     }
 
     public JButton getClearButton() {
@@ -65,10 +71,13 @@ public class Mainframe {
                     int y = countCoord(e.getY() - 5);
 
                     int clickedId = 39 * y + x;
-                    if (graph.getElement(clickedId) != null && graph.getElement(clickedId).getVertexView().getVertexImage() instanceof WhiteVertexImage)
+                    if (graph.getElement(clickedId) != null && graph.getElement(clickedId).getVertexView().getVertexImage() instanceof WhiteVertexImage) {
                         graph.getElement(clickedId).setVertexImage(new BlackVertexImage(graph.getElement(clickedId)));
-                    else if (graph.getElement(clickedId) != null && graph.getElement(clickedId).getVertexView().getVertexImage() instanceof BlackVertexImage)
+                        //graph.getElement(clickedId).getNeighbours().clear();
+                    } else if (graph.getElement(clickedId) != null && graph.getElement(clickedId).getVertexView().getVertexImage() instanceof BlackVertexImage) {
                         graph.getElement(clickedId).setVertexImage(new WhiteVertexImage(graph.getElement(clickedId)));
+                        //graph.RestoreNeighbours(clickedId);
+                    }
                     drawPanel.repaint();
                     //System.out.println(x + ";" + y);
                 }
@@ -86,8 +95,10 @@ public class Mainframe {
 
                 int clickedId = 39 * y + x;
 
-                if (graph.getElement(clickedId) != null && graph.getElement(clickedId).getVertexView().getVertexImage() instanceof WhiteVertexImage)
+                if (graph.getElement(clickedId) != null && graph.getElement(clickedId).getVertexView().getVertexImage() instanceof WhiteVertexImage) {
                     graph.getElement(clickedId).setVertexImage(new BlackVertexImage(graph.getElement(clickedId)));
+                    //graph.getElement(clickedId).getNeighbours().clear();
+                }
                 drawPanel.repaint();
                 //System.out.println(x + ";" + y);
             }
@@ -99,6 +110,7 @@ public class Mainframe {
                 graph.clear();
                 drawPanel.repaint();
                 startButton.setEnabled(true);
+                wallComboBox.setEnabled(true);
             }
         });
 
@@ -112,18 +124,59 @@ public class Mainframe {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                graph.RandomWalls(0.3);
-                Vertex source = graph.RandomVertex();
-                source.setVertexImage(new StartVertexImage(source));
+
                 List<Vertex> nodes = graph.Dijkstra(source);
                 algThread = new AlgorithmThread(drawPanel, Mainframe.this);
                 algThread.setVertices(nodes);
-                algThread.setTarget(graph.RandomTarget());
+                algThread.setTarget(target);
                 algThread.start();
+
+                //graph.connectedComponents();
+                //System.out.println();
+                graph.InTheSameComponent(source, target);
+
                 startButton.setEnabled(false);
                 clearButton.setEnabled(false);
+                wallComboBox.setEnabled(false);
             }
         });
+
+        wallComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                graph.clear();
+                startButton.setEnabled(true);
+                switch (wallComboBox.getSelectedItem().toString()) {
+                    case "Random walls":
+                        graph.RandomWalls(0.2);
+                        break;
+                    case "Easy maze":
+                        graph.EasyMaze(24, 39);
+                        //graph.connectedComponents();
+                        //TODO: vertex törlése ténylegesen, ne csak grafikusan
+                        /*List<Vertex> vert = graph.Dijkstra(source);
+                        while (!TargetIsFindable(vert)) {
+                            graph.EasyMaze(24, 39);
+                            drawPanel.repaint();
+                            vert = graph.Dijkstra(source);
+                            System.out.println(vert.size());
+                        }*/
+
+                        break;
+                    case "Random maze":
+                        //TODO: implementation
+                        break;
+                    default:
+                        break;
+                }
+                drawPanel.repaint();
+            }
+        });
+
+    }
+
+    private boolean TargetIsFindable(List<Vertex> nodes) {
+        return nodes.contains(target);
     }
 
     public static void Run(String[] args) {
@@ -152,6 +205,9 @@ public class Mainframe {
         String[] algorithms = {"Dijkstra", "A-search", "BFS", "DFS"};
         algComboBox = new JComboBox(algorithms);
         startButton = new JButton();
+
+        String[] wallTypes = {"Random walls", "Random maze", "Easy maze"};
+        wallComboBox = new JComboBox(wallTypes);
     }
 
     /**
@@ -197,12 +253,24 @@ public class Mainframe {
         clearButton.setForeground(new Color(-1));
         clearButton.setText("Clear");
         panel5.add(clearButton, BorderLayout.CENTER);
+        final JPanel panel6 = new JPanel();
+        panel6.setLayout(new BorderLayout(0, 0));
+        panel3.add(panel6, BorderLayout.CENTER);
         startButton.setBackground(new Color(-12828607));
         Font startButtonFont = this.$$$getFont$$$("Fira Code Medium", -1, 16, startButton.getFont());
         if (startButtonFont != null) startButton.setFont(startButtonFont);
         startButton.setForeground(new Color(-1));
+        startButton.setPreferredSize(new Dimension(200, 30));
         startButton.setText("Start");
-        panel3.add(startButton, BorderLayout.CENTER);
+        panel6.add(startButton, BorderLayout.WEST);
+        wallComboBox.setBackground(new Color(-12828607));
+        Font wallComboBoxFont = this.$$$getFont$$$("Fira Code Medium", -1, 16, wallComboBox.getFont());
+        if (wallComboBoxFont != null) wallComboBox.setFont(wallComboBoxFont);
+        wallComboBox.setForeground(new Color(-1));
+        wallComboBox.setOpaque(false);
+        wallComboBox.setPopupVisible(false);
+        wallComboBox.setPreferredSize(new Dimension(200, 30));
+        panel6.add(wallComboBox, BorderLayout.EAST);
         drawPanel.setPreferredSize(new Dimension(1000, 650));
         panel2.add(drawPanel, BorderLayout.CENTER);
     }

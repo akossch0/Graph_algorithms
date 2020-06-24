@@ -11,6 +11,8 @@ public class Graph {
     private Set<Vertex> vertices;
     private View view;
     private Mainframe frame;
+    private Vertex src;
+    private Vertex trgt;
 
     public View getView() {
         return view;
@@ -118,6 +120,22 @@ public class Graph {
             }
         }
     }
+    public void RestoreNeighbours(int id){
+        Vertex nbor1 = getElement(id + 1);
+        Vertex nbor2 = getElement(id - 1);
+        Vertex nbor3 = getElement(id + 24);
+        Vertex nbor4 = getElement(id - 24);
+
+        if(nbor1 != null && !(nbor1.getVertexView().getVertexImage() instanceof BlackVertexImage))
+            addEdge(nbor1.getId(), id, 1);
+        if(nbor2 != null && !(nbor1.getVertexView().getVertexImage() instanceof BlackVertexImage))
+            addEdge(nbor2.getId(), id, 1);
+        if(nbor3 != null && !(nbor1.getVertexView().getVertexImage() instanceof BlackVertexImage))
+            addEdge(nbor3.getId(), id, 1);
+        if(nbor4 != null && !(nbor1.getVertexView().getVertexImage() instanceof BlackVertexImage))
+            addEdge(nbor4.getId(), id, 1);
+    }
+
 
     public void printGraph(){
         for(Vertex v : vertices){
@@ -180,7 +198,21 @@ public class Graph {
 
     public void clear(){
         for (Vertex v : vertices) {
-            v.setVertexImage(new WhiteVertexImage(v));
+            boolean ImportantNode =
+                    (v.getVertexView().getVertexImage() instanceof StartVertexImage ||
+                            v.getVertexView().getVertexImage() instanceof TargetVertexImage);
+            //if(v.getVertexView().getVertexImage() instanceof BlackVertexImage)
+                //RestoreNeighbours(v.getId());
+            if(!ImportantNode)
+                v.setVertexImage(new WhiteVertexImage(v));
+            v.setShortestPath(new LinkedList<>());
+            v.setDistance(Integer.MAX_VALUE);
+
+        }
+    }
+
+    public void clearDijkstra(){
+        for(Vertex v : vertices){
             v.setShortestPath(new LinkedList<>());
             v.setDistance(Integer.MAX_VALUE);
         }
@@ -202,6 +234,19 @@ public class Graph {
         return source;
     }
 
+    public Vertex RandomSource(){
+        Vertex source = null;
+        while(source == null){
+            Vertex curr = RandomVertex();
+            if(!(curr.getVertexView().getVertexImage() instanceof TargetVertexImage)){
+                source = curr;
+            }
+        }
+        source.setVertexImage(new StartVertexImage(source));
+        src = source;
+        return source;
+    }
+
     public Vertex RandomTarget(){
         Vertex target = null;
         while(target == null){
@@ -211,18 +256,103 @@ public class Graph {
             }
         }
         target.setVertexImage(new TargetVertexImage(target));
+        trgt = target;
         return target;
     }
 
     public void RandomWalls(double p){
-
         for(Vertex v : vertices){
             Random rand = new Random();
             double Poss = rand.nextDouble();
-            if(Poss < p){
+            boolean ImportantNode =
+                    (v.getVertexView().getVertexImage() instanceof StartVertexImage ||
+                            v.getVertexView().getVertexImage() instanceof TargetVertexImage);
+
+            if(Poss < p && !ImportantNode){
                 v.setVertexImage(new BlackVertexImage(v));
+                //v.getNeighbours().clear();
             }
         }
     }
+
+    public void EasyMaze(int row, int col){
+        for(int i = 0; i < row; i++){
+            for(int j = 0; j < col; j++){
+                Vertex v = getElement(col * i + j);
+                boolean ImportantNode =
+                        (v.getVertexView().getVertexImage() instanceof StartVertexImage ||
+                                v.getVertexView().getVertexImage() instanceof TargetVertexImage);
+                if(i % 2 == 1){
+                    if(i % 4 == 1){
+                        if(j < col - 1 && !ImportantNode){
+                            v.setVertexImage(new BlackVertexImage(v));
+                            //v.getNeighbours().clear();
+                        }
+                    }else if(i % 4 == 3){
+                        if(j > 0 && !ImportantNode){
+                            v.setVertexImage(new BlackVertexImage(v));
+                            //v.getNeighbours().clear();
+                        }
+                    }
+                }
+            }
+        }
+        Random rand = new Random();
+        for(Vertex v : vertices){
+            double poss = rand.nextDouble();
+            if(v.getVertexView().getVertexImage() instanceof BlackVertexImage){
+                if(poss > 0.95){
+                    v.setVertexImage(new WhiteVertexImage(v));
+                    //RestoreNeighbours(v.getId());
+                }
+            }else if(v.getVertexView().getVertexImage() instanceof WhiteVertexImage){
+                if(poss > 0.7){
+                    v.setVertexImage(new BlackVertexImage(v));
+
+                    if(!InTheSameComponent(src,trgt) || connectedComponents().size() > 40)
+                        v.setVertexImage(new WhiteVertexImage(v));
+                }
+            }
+        }
+    }
+
+    public void dfs(Vertex v, Map<Vertex, Boolean> visited, List<Vertex> result){
+        visited.put(v,true);
+        result.add(v);
+        //System.out.print(v.getId()+" ");
+
+        for(Vertex vert : v.getNeighbours().keySet()){
+            if(!visited.get(vert) && !(v.getVertexView().getVertexImage() instanceof BlackVertexImage))
+                dfs(vert, visited, result);
+        }
+    }
+
+    public List<List<Vertex>> connectedComponents() {
+        Map<Vertex, Boolean> visited = new HashMap<>();
+        for(Vertex v : vertices){
+            visited.put(v,false);
+        }
+
+        List<List<Vertex>> components = new ArrayList<>();
+        for(Vertex v : visited.keySet()){
+            List<Vertex> comp = new ArrayList<>();
+            if(!visited.get(v) && !(v.getVertexView().getVertexImage() instanceof BlackVertexImage)){
+                dfs(v,visited,comp);
+                components.add(comp);
+                //System.out.println();
+            }
+        }
+        return components;
+    }
+
+    public boolean InTheSameComponent(Vertex v1, Vertex v2){
+        List<List<Vertex>> components = connectedComponents();
+        for(List<Vertex> comp : components){
+            if(comp.contains(v1) && comp.contains(v2))
+                return true;
+        }
+        return false;
+    }
+
 
 }
